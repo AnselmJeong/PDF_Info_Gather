@@ -1,0 +1,89 @@
+# AI Configuration
+[ai]
+system_prompt = """
+Analyze the **introduction and discussion sections** of the document given by the user. Identify and list **key knowledge snippets** that meet *all* of these criteria:
+
+1. **Conceptual**: Definitions of core terms, theories, frameworks, or mechanisms central to the topic.
+2. **Contextual**: Summaries of prior research findings, debates, or gaps in the literature that clarify why this topic matters.
+3. **Novelty**: Insights that are *not* common knowledge or just obvious claims (e.g., avoid basic textbook definitions or widely accepted facts).
+4. **Comprehensiveness**: Collect as many information as possible which is mentioned in the paper, even if it is not directly related to the authors' main arguments. In ordinary cases, the number of snippets would be be 10-20.
+
+Additionally, for each of the identified knowledge snippet, identify and list **arguments or viewpoints** that either **support or reject** it if found in the document. These alternative viewpoints prioritize meeting the following criteria.
+
+1. **Contrasting Perspectives**: Explicit disagreements, alternative interpretations, or critiques of methods/conclusions (e.g., *‘Author X argues…, but Author Y counters…’*).
+2. **Evidence-Based**: Statements tied to empirical results, theoretical frameworks, or methodological limitations (avoid opinion-only claims).
+3. **Impact**: Positions that meaningfully influence the field’s understanding or acceptance of the claim.
+
+**Format**:
+
+- list each snippet as dictionary with five keys: theme, snippet, supports, rejects, citations.
+- theme: the theme of the snippet in condensed clause
+- snippet: the knowledge snippet which contain valuable information
+- supports: supporting arguments for the snippet
+- rejects: counter arguments for the snippet
+- citations: multiple citations used anywhere in snippet, supports and rejects
+
+- output in strict list of JSON format with keys: theme, snippet, supports, rejects, citations.
+
+**Output Example**:
+
+   [{
+   "theme": "Definition and Prevalence of Obsessive-Compulsive Symptoms (OCS) in Schizophrenia",
+   "snippet": "Obsessions can take the form of recurrent and persistent thoughts, images, or impulses that the patient perceives as invasive and absurd, often attempting to resist them but without success, causing significant discomfort.",
+   "supports": "Gálvez-Buccollini et al. [31] found that aggressive, miscellaneous, and contamination obsessions were significantly more prevalent in clozapine-treated patients compared to those treated with typical antipsychotics.",
+   "rejects": "Doyle et al. [52] evaluated OCS using the OCI in patients diagnosed with schizophrenia treated with clozapine and patients diagnosed with OCD. Their findings report that 14 participants (23%) in the clozapine group presented total OCI scores in a clinically significant range.",
+   "citations": [
+    "Gálvez-Buccollini et al. (2004) Síntomas obsesivo-compulsivos en Esquizofrenia Durante El tratamiento con clozapina y antipsicóticos clásicos. Actas Esp Psiquiatr. 32(4):211-215. DOI: 10.1016/S0210-6704(04)72474-7", 
+    "Doyle et al. (2014) Obsessive compulsive symptoms in patients with Schizophrenia on Clozapine and with obsessive compulsive disorder: A comparison study. Compr Psychiatry. 55(1):130-136. DOI: 10.1016/j.comppsych.2013.09.001"]
+   }]
+     
+"""
+user_prompt = """Analyze the paper and identify knowledge snippets and arguments.
+DOCUMENT:
+{document}
+"""
+
+aggregate_prompt = """
+LIST:
+{themes}
+
+Above is the list of items. 
+Please aggregate items with almost the same content and turm them into a JSON objectwith the keys "theme" and "items".
+"theme" is the overarching theme that summarize the grouped items.
+"items" is the list of items that are grouped into the same cluster.
+
+The OUTPUT should be formatted like this:
+```json
+{{ "themes": [
+    {{
+        "theme": "Clozapine's Mechanism in Inducing OCS",
+        "items": ["1. Clozapine's Mechanism in Inducing OCS", "2. Genetic Factors in Clozapine-Induced OCS", "3. Mechanism of Clozapine-Induced Habit Formation"]
+    }},
+    {{
+        "theme": "Impact of Clozapine Dose on OCS and OCD",
+        "items": ["4. Impact of Clozapine Dose on OCS and OCD", "5. Prevalence of Clozapine-Associated OCS", "6. Management Strategies for Clozapine-Associated OCS"]
+    }}
+]
+}}
+```
+"""
+
+# Model Settings
+[model]
+deepseek_base_url = "https://api.deepseek.com"
+qwen_base_url = "https://dashscope-intl.aliyuncs.com/compatible-mode/v1"
+deepseek_model_name = "deepseek-chat"
+openai_model_name = "gpt-4o-mini"
+groq_model_name = "deepseek-r1-distill-llama-70b"
+qwen_model_name = "qwen-turbo"
+temperature = 0.7
+
+# Application Settings
+[app]
+debug = false
+log_level = "info"
+history_size = 10
+
+# Paths Configuration
+[paths]
+cache_dir = "cache"
